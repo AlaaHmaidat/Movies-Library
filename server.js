@@ -43,6 +43,14 @@ function Movies(id, title, release_date, poster_path, overview) {
 server.get('/', homeHandler)
 //Favorite route
 server.get('/favorite', favoriteHandler)
+//Genre route
+server.get('/genre', genreHandler)
+//Trending route
+server.get('/trending', trendingHandler)
+//Search route
+server.get('/search', searchHandler)
+//Discover route
+server.get('/discover', discoverHandler)
 //Default route 
 server.get('*', defaultHandler)
 
@@ -50,6 +58,16 @@ server.get('*', defaultHandler)
 //Functions Handlers
 //Home Handler
 function homeHandler(req, res) {
+    res.send('Welcome to Home Page');
+}
+
+//Favorite route Handler
+function favoriteHandler(req, res) {
+    res.send('Welcome to Favorite Page');
+}
+
+//Genre Handler
+function genreHandler(req, res) {
     // /genre
     const url4 = `https://api.themoviedb.org/3/genre/movie/list?api_key=${APIKey}&language=en-US`;
     try {
@@ -71,14 +89,11 @@ function homeHandler(req, res) {
     }
 }
 
-//Favorite route Handler
-function favoriteHandler(req, res) {
+//Trending Handler
+function trendingHandler(req, res) {
     // /trending
     const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${APIKey}&language=en-US`;
-    // /search
-    const url2 = `https://api.themoviedb.org/3/search/movie?api_key=${APIKey}&language=en-US&query=The&page=2`;
-    // /discover
-    const url3 = `https://api.themoviedb.org/3/discover/movie?api_key=${APIKey}&language=en-US`;
+
     try {
         axios.get(url).then((axiosResult) => {
             let mapRes = axiosResult.data.results.map((item) => {
@@ -98,7 +113,54 @@ function favoriteHandler(req, res) {
     }
 }
 
-//middleware function
+//Search Handler
+function searchHandler(req, res) {
+    // /search
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${APIKey}&language=en-US&query=The&page=2`;
+
+    try {
+        axios.get(url).then((axiosResult) => {
+            let mapRes = axiosResult.data.results.map((item) => {
+                const data = new Movies(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                return data;
+            })
+            res.send(mapRes);
+        })
+            .catch((err) => {
+                console.log("Sorry, something went wrong", err);
+                res.status(500).send(err);
+            })
+    }
+
+    catch (error) {
+        errorHandler(error, req, res);
+    }
+}
+
+//Discover Handler
+function discoverHandler(req, res) {
+    // /discover
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${APIKey}&language=en-US`;
+    try {
+        axios.get(url).then((axiosResult) => {
+            let mapRes = axiosResult.data.results.map((item) => {
+                const data = new Movies(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                return data;
+            })
+            res.send(mapRes);
+        })
+            .catch((err) => {
+                console.log("Sorry, something went wrong", err);
+                res.status(500).send(err);
+            })
+    }
+
+    catch (error) {
+        errorHandler(error, req, res);
+    }
+}
+
+//middleware function Handler
 function errorHandler(erorr, req, res) {
     const err = {
         status: 500,
@@ -111,12 +173,6 @@ function errorHandler(erorr, req, res) {
 function defaultHandler(req, res) {
     res.status(404).send('page not found error');
 }
-//..............................................................................
-//Functions
-function movies(url) {
-
-}
-
 //..............................................................................
 //Tell the server about its port number (port = 3000)
 server.listen(PORT, () => {
