@@ -56,10 +56,14 @@ server.get('/trending', trendingHandler)
 server.get('/search', searchHandler)
 //Discover route
 server.get('/discover', discoverHandler)
+//Git movie route
+server.get('/getMovies', getMoviesHandler)
+//Add movie route
+server.post('/addMovie', addMovieHandler)
 //movie route
-server.get('/movie', getMoviesHandler)
+server.delete('/UPDATE/:id', deleteMovieHandler)
 //movie route
-server.post('/movie', addMovieHandler)
+server.put('/movie', updateMovieHandler)
 //Default route 
 server.get('*', defaultHandler)
 
@@ -184,7 +188,7 @@ function getMoviesHandler(req, res) {
 }
 //Add (post) Movie Handler
 function addMovieHandler(req, res) {
-     //    /movie
+     //    /addMovie
     const addMovie = req.body;
     const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
     const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
@@ -197,6 +201,39 @@ function addMovieHandler(req, res) {
             errorHandler(error, req, res);
         });
 }
+
+//Delete Movie Handler
+function deleteMovieHandler(req, res) {
+    //    /movie
+   const addMovie = req.body;
+   const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
+   const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
+   client.query(sql, arrVal)
+       .then((data) => {
+           res.send("your data was added !");
+       })
+       .catch(error => {
+           // console.log(error);
+           errorHandler(error, req, res);
+       });
+}
+
+//Update Movie Handler
+function updateMovieHandler(req, res) {
+    //    /movie
+   const addMovie = req.body;
+   const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
+   const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
+   client.query(sql, arrVal)
+       .then((data) => {
+           res.send("your data was added !");
+       })
+       .catch(error => {
+           // console.log(error);
+           errorHandler(error, req, res);
+       });
+}
+
 //middleware function Handler
 function errorHandler(erorr, req, res) {
     const err = {
