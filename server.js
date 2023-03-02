@@ -57,13 +57,15 @@ server.get('/search', searchHandler)
 //Discover route
 server.get('/discover', discoverHandler)
 //Git movie route
-server.get('/getMovies', getMoviesHandler)
+server.get('/getmovies', getMoviesHandler)
+//Git specific movie route
+server.get('/getmovie/:id', getSpecificMoviesHandler)
 //Add movie route
-server.post('/addMovie', addMovieHandler)
-//movie route
-server.delete('/UPDATE/:id', deleteMovieHandler)
-//movie route
-server.put('/movie', updateMovieHandler)
+server.post('/addmovie', addMovieHandler)
+//Delete route
+server.delete('/DELETE/:id', deleteMovieHandler)
+//Update route
+server.put('/UPDATE/:id', updateMovieHandler)
 //Default route 
 server.get('*', defaultHandler)
 
@@ -81,7 +83,7 @@ function favoriteHandler(req, res) {
 
 //Genre Handler
 function genreHandler(req, res) {
-    // /genre
+    // http://localhost:3000/genre
     const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${APIKey}&language=en-US`;
     try {
         axios.get(url).then((axiosResult) => {
@@ -104,7 +106,7 @@ function genreHandler(req, res) {
 
 //Trending Handler
 function trendingHandler(req, res) {
-    // /trending
+    // http://localhost:3000/trending
     const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${APIKey}&language=en-US`;
 
     try {
@@ -128,7 +130,7 @@ function trendingHandler(req, res) {
 
 //Search Handler
 function searchHandler(req, res) {
-    // /search
+    // http://localhost:3000/search
     const url = `https://api.themoviedb.org/3/search/movie?api_key=${APIKey}&language=en-US&query=The&page=2`;
 
     try {
@@ -152,7 +154,7 @@ function searchHandler(req, res) {
 
 //Discover Handler
 function discoverHandler(req, res) {
-    // /discover
+    // http://localhost:3000/discover
     const url = `https://api.themoviedb.org/3/discover/movie?api_key=${APIKey}&language=en-US`;
     try {
         axios.get(url).then((axiosResult) => {
@@ -176,7 +178,7 @@ function discoverHandler(req, res) {
 //Git Movie Handler
 function getMoviesHandler(req, res) {
     //    return all movies (movie tabel content)
-    //    /movie
+    //    http://localhost:3000/getmovies
     const sql = `SELECT * FROM movie`;
     client.query(sql)
         .then((data) => {
@@ -186,9 +188,25 @@ function getMoviesHandler(req, res) {
             errorHandler(err, req, res);
         })
 }
+
+//Git SpecificMovie Handler
+function getSpecificMoviesHandler(req, res) {
+    //    return specific movies 
+    //    http://localhost:3000/getmovie/id
+    const id = req.params.id;
+        const sql = `SELECT * FROM movie WHERE id=${id}`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
+}
+
 //Add (post) Movie Handler
 function addMovieHandler(req, res) {
-     //    /addMovie
+    //    /addmovie
     const addMovie = req.body;
     const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
     const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
@@ -204,34 +222,38 @@ function addMovieHandler(req, res) {
 
 //Delete Movie Handler
 function deleteMovieHandler(req, res) {
-    //    /movie
-   const addMovie = req.body;
-   const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
-   const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
-   client.query(sql, arrVal)
-       .then((data) => {
-           res.send("your data was added !");
-       })
-       .catch(error => {
-           // console.log(error);
-           errorHandler(error, req, res);
-       });
+    //   /DELETE/:id
+
+    const id = req.params.id; //to get the path prameters
+    const sql = `DELETE FROM movie WHERE id=${id}`;
+    client.query(sql)
+        .then((resData) => {
+            //this status(204) if id dosnt exist 
+            res.status(204).json({});
+        })
+        .catch((error) => {
+            errorHandler(error, req, res);
+        })
 }
 
 //Update Movie Handler
 function updateMovieHandler(req, res) {
-    //    /movie
-   const addMovie = req.body;
-   const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
-   const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
-   client.query(sql, arrVal)
-       .then((data) => {
-           res.send("your data was added !");
-       })
-       .catch(error => {
-           // console.log(error);
-           errorHandler(error, req, res);
-       });
+    //  /UPDATE/:id
+    const id = req.params.id; //to get the path prameters
+    const updateReq = req.body;
+    const sql = `UPDATE movie
+    SET title =$1
+    WHERE id=${id};`;
+    const arrVal = [updateReq.title];
+    client.query(sql, arrVal)
+        .then((resData) => {
+            //this status(200) mean everything is OK
+            res.status(200).send(resData.rows);
+        })
+        .catch(error => {
+            // console.log(error);
+            errorHandler(error, req, res);
+        });
 }
 
 //middleware function Handler

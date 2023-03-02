@@ -6,7 +6,8 @@
 
 ## WRRC
 <!-- ![alt text](./img/Untitled%20(6).jpg) -->
-![alt text](./img/Untitled%20(8).jpg)
+<!-- ![alt text](./img/Untitled%20(8).jpg) -->
+![alt text](./img/Untitled%20(9).jpg)
 ## Overview
 
 ## Getting Started
@@ -16,8 +17,9 @@
 4- Create a constructor function to ensure the data follow the same format
 5- Create a routes (Endpoints) useing git method
 6- Create GET request to the 3rd party API
-7- Handle errors useing git method
-8- Tell the server about its port number useing listen method
+7- Create GET POST PUT DELETE request to the DB
+8- Handle errors useing git method
+9- Tell the server about its port number useing listen method
 
 
 ## Project Features
