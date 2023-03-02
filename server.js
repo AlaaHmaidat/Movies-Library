@@ -15,9 +15,13 @@ const axios = require('axios');
 //import the dotenv
 require('dotenv').config();
 
+//import pg
+const pg = require('pg');//1. importing the pg 
+
 //..............................................................................
 //server open for all clients requests
 server.use(cors());
+server.use(express.json());
 
 //..............................................................................
 //Create a variables
@@ -26,7 +30,8 @@ server.use(cors());
 //Port number
 const PORT = 3000;
 const APIKey = process.env.APIKey;
-
+//2. create obj from Client
+const client = new pg.Client(process.env.DATABASE_URL);
 //..............................................................................
 //Create a constructor function to ensure the data follow the same format
 function Movies(id, title, release_date, poster_path, overview) {
@@ -51,6 +56,14 @@ server.get('/trending', trendingHandler)
 server.get('/search', searchHandler)
 //Discover route
 server.get('/discover', discoverHandler)
+//Git movie route
+server.get('/getMovies', getMoviesHandler)
+//Add movie route
+server.post('/addMovie', addMovieHandler)
+//movie route
+server.delete('/UPDATE/:id', deleteMovieHandler)
+//movie route
+server.put('/movie', updateMovieHandler)
 //Default route 
 server.get('*', defaultHandler)
 
@@ -69,9 +82,9 @@ function favoriteHandler(req, res) {
 //Genre Handler
 function genreHandler(req, res) {
     // /genre
-    const url4 = `https://api.themoviedb.org/3/genre/movie/list?api_key=${APIKey}&language=en-US`;
+    const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${APIKey}&language=en-US`;
     try {
-        axios.get(url4).then((axiosResult) => {
+        axios.get(url).then((axiosResult) => {
             let mapRes = axiosResult.data.genres.map((item) => {
                 const data = new Movies(item.id, item.name);
                 return data;
@@ -160,6 +173,67 @@ function discoverHandler(req, res) {
     }
 }
 
+//Git Movie Handler
+function getMoviesHandler(req, res) {
+    //    return all movies (movie tabel content)
+    //    /movie
+    const sql = `SELECT * FROM movie`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
+}
+//Add (post) Movie Handler
+function addMovieHandler(req, res) {
+     //    /addMovie
+    const addMovie = req.body;
+    const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
+    const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
+    client.query(sql, arrVal)
+        .then((data) => {
+            res.send("your data was added !");
+        })
+        .catch(error => {
+            // console.log(error);
+            errorHandler(error, req, res);
+        });
+}
+
+//Delete Movie Handler
+function deleteMovieHandler(req, res) {
+    //    /movie
+   const addMovie = req.body;
+   const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
+   const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
+   client.query(sql, arrVal)
+       .then((data) => {
+           res.send("your data was added !");
+       })
+       .catch(error => {
+           // console.log(error);
+           errorHandler(error, req, res);
+       });
+}
+
+//Update Movie Handler
+function updateMovieHandler(req, res) {
+    //    /movie
+   const addMovie = req.body;
+   const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
+   const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
+   client.query(sql, arrVal)
+       .then((data) => {
+           res.send("your data was added !");
+       })
+       .catch(error => {
+           // console.log(error);
+           errorHandler(error, req, res);
+       });
+}
+
 //middleware function Handler
 function errorHandler(erorr, req, res) {
     const err = {
@@ -174,7 +248,11 @@ function defaultHandler(req, res) {
     res.status(404).send('page not found error');
 }
 //..............................................................................
+//3. connect the server with demo13 database
 //Tell the server about its port number (port = 3000)
-server.listen(PORT, () => {
-    console.log(`listening on ${PORT} : I am ready`);
-})
+client.connect()
+    .then(() => {
+        server.listen(PORT, () => {
+            console.log(`listening on ${PORT} : I am ready`);
+        });
+    })
