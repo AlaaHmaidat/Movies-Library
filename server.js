@@ -21,7 +21,7 @@ const pg = require('pg');//1. importing the pg
 //..............................................................................
 //server open for all clients requests
 server.use(cors());
-//server.use(express.json());
+server.use(express.json());
 
 //..............................................................................
 //Create a variables
@@ -182,11 +182,11 @@ function getMoviesHandler(req, res) {
             errorHandler(err, req, res);
         })
 }
-//Add Movie Handler
+//Add (post) Movie Handler
 function addMovieHandler(req, res) {
      //    /movie
     const addMovie = req.body;
-    const sql = `INSERT INTO movie(title,release_date,overview) VALUES ($1,$2,$3) RETURNING *;`
+    const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
     const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
     client.query(sql, arrVal)
         .then((data) => {
