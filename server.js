@@ -25,10 +25,10 @@ server.use(express.json());
 
 //..............................................................................
 //Create a variables
-//const movieData = require('./Movie Data/data.json');
+//const movieData = require('./data.json');
 
 //Port number
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const APIKey = process.env.APIKey;
 //2. create obj from Client
 const client = new pg.Client(process.env.DATABASE_URL);
