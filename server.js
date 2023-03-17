@@ -28,7 +28,7 @@ server.use(express.json());
 //const movieData = require('./data.json');
 
 //Port number
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const APIKey = process.env.APIKey;
 //2. create obj from Client
 const client = new pg.Client(process.env.DATABASE_URL);
@@ -208,8 +208,8 @@ function getSpecificMoviesHandler(req, res) {
 function addMovieHandler(req, res) {
     //    /addmovie
     const addMovie = req.body;
-    const sql = `INSERT INTO movie (title,release_date,overview) VALUES ($1,$2,$3) RETURNING *`;
-    const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview];
+    const sql = `INSERT INTO movie (title,release_date,overview,comment) VALUES ($1,$2,$3,$4) RETURNING *`;
+    const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview,addMovie.comment];
     client.query(sql, arrVal)
         .then((data) => {
             res.send("your data was added !");
