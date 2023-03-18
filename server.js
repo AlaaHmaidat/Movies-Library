@@ -243,9 +243,9 @@ function updateMovieHandler(req, res) {
     const id = req.params.id; //to get the path prameters
     const updateReq = req.body;
     const sql = `UPDATE movie
-    SET title =$1
+    SET comment =$1
     WHERE id=${id};`;
-    const arrVal = [updateReq.title];
+    const arrVal = [updateReq.comment];
     client.query(sql, arrVal)
         .then((resData) => {
             //this status(200) mean everything is OK
