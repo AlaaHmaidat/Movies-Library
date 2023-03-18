@@ -194,7 +194,7 @@ function getSpecificMoviesHandler(req, res) {
     //    return specific movies 
     //    http://localhost:3000/getmovie/id
     const id = req.params.id;
-    const sql = `SELECT * FROM movie WHERE id=${id}`;
+        const sql = `SELECT * FROM movie WHERE id=${id}`;
     client.query(sql)
         .then((data) => {
             res.send(data.rows);
@@ -208,18 +208,12 @@ function getSpecificMoviesHandler(req, res) {
 function addMovieHandler(req, res) {
     //    /addmovie
     const addMovie = req.body;
-    const sql = `INSERT INTO movie (title,release_date,overview,comment) VALUES ($1,$2,$3,$4) RETURNING *`;
-    const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview, addMovie.comment];
+    const sql = `INSERT INTO movie (title,release_date,overview,comment) VALUES ($1,$2,$3,$4,$5) RETURNING *`;
+    const arrVal = [addMovie.title, addMovie.release_date,addMovie.poster_path, addMovie.overview,addMovie.comment];
     client.query(sql, arrVal)
         .then((data) => {
-            const sql = `SELECT * FROM movie`;
-            client.query(sql)
-                .then((data) => {
-                    res.send(data.rows);
-                })
-                .catch((err) => {
-                    errorHandler(err, req, res);
-                })
+            res.send("your data was added !");
+            
         })
         .catch(error => {
             // console.log(error);
@@ -255,7 +249,15 @@ function updateMovieHandler(req, res) {
     client.query(sql, arrVal)
         .then((resData) => {
             //this status(200) mean everything is OK
-            res.status(200).send(resData.rows);
+           // res.status(200).send(resData.rows);
+           const sql = `SELECT * FROM movie`;
+           client.query(sql)
+               .then((data) => {
+                   res.send(data.rows);
+               })
+               .catch((err) => {
+                   errorHandler(err, req, res);
+               })
         })
         .catch(error => {
             // console.log(error);
