@@ -194,7 +194,7 @@ function getSpecificMoviesHandler(req, res) {
     //    return specific movies 
     //    http://localhost:3000/getmovie/id
     const id = req.params.id;
-        const sql = `SELECT * FROM movie WHERE id=${id}`;
+    const sql = `SELECT * FROM movie WHERE id=${id}`;
     client.query(sql)
         .then((data) => {
             res.send(data.rows);
@@ -209,10 +209,17 @@ function addMovieHandler(req, res) {
     //    /addmovie
     const addMovie = req.body;
     const sql = `INSERT INTO movie (title,release_date,overview,comment) VALUES ($1,$2,$3,$4) RETURNING *`;
-    const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview,addMovie.comment];
+    const arrVal = [addMovie.title, addMovie.release_date, addMovie.overview, addMovie.comment];
     client.query(sql, arrVal)
         .then((data) => {
-            res.send("your data was added !");
+            const sql = `SELECT * FROM movie`;
+            client.query(sql)
+                .then((data) => {
+                    res.send(data.rows);
+                })
+                .catch((err) => {
+                    errorHandler(err, req, res);
+                })
         })
         .catch(error => {
             // console.log(error);
