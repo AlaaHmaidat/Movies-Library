@@ -208,7 +208,7 @@ function getSpecificMoviesHandler(req, res) {
 function addMovieHandler(req, res) {
     //    /addmovie
     const addMovie = req.body;
-    const sql = `INSERT INTO movie (title,release_date,overview,comment) VALUES ($1,$2,$3,$4,$5) RETURNING *`;
+    const sql = `INSERT INTO movie (title,release_date,poster_path,overview,comment) VALUES ($1,$2,$3,$4,$5) RETURNING *`;
     const arrVal = [addMovie.title, addMovie.release_date,addMovie.poster_path, addMovie.overview,addMovie.comment];
     client.query(sql, arrVal)
         .then((data) => {
