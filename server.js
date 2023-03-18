@@ -243,7 +243,7 @@ function updateMovieHandler(req, res) {
     const id = req.params.id; //to get the path prameters
     const updateReq = req.body;
     const sql = `UPDATE movie
-    SET comment =$1
+    SET comment =$5
     WHERE id=${id};`;
     const arrVal = [updateReq.comment];
     client.query(sql, arrVal)
