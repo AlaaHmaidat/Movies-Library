@@ -78,7 +78,14 @@ function homeHandler(req, res) {
 
 //Favorite route Handler
 function favoriteHandler(req, res) {
-    res.send('Welcome to Favorite Page');
+    const sql = `SELECT * FROM movie`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
 }
 
 //Genre Handler
@@ -243,7 +250,7 @@ function updateMovieHandler(req, res) {
     const id = req.params.id; //to get the path prameters
     const updateReq = req.body;
     const sql = `UPDATE movie
-    SET comment =$1
+    SET comment =$5
     WHERE id=${id};`;
     const arrVal = [updateReq.comment];
     client.query(sql, arrVal)
@@ -251,14 +258,14 @@ function updateMovieHandler(req, res) {
             //this status(200) mean everything is OK
             res.status(200).send(resData.rows);
 
-            // const sql = `SELECT * FROM movie`;
-            // client.query(sql)
-            //     .then((data) => {
-            //         res.send(data.rows);
-            //     })
-            //     .catch((err) => {
-            //         errorHandler(err, req, res);
-            //     })
+            const sql = `SELECT * FROM movie`;
+            client.query(sql)
+                .then((data) => {
+                    res.send(data.rows);
+                })
+                .catch((err) => {
+                    errorHandler(err, req, res);
+                })
         })
         .catch(error => {
             // console.log(error);
