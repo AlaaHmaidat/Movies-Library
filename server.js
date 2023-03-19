@@ -46,8 +46,6 @@ function Movies(id, title, release_date, poster_path, overview) {
 //Routes (Endpoints)
 //Home route
 server.get('/', homeHandler)
-//Favorite route
-server.get('/favorite', favoriteHandler)
 //Genre route
 server.get('/genre', genreHandler)
 //Trending route
@@ -56,16 +54,23 @@ server.get('/trending', trendingHandler)
 server.get('/search', searchHandler)
 //Discover route
 server.get('/discover', discoverHandler)
+
+//.......
+//Favorite route
+server.get('/favorite', favoriteHandler)
+//Update route
+server.put('/favorite/:id', updateFavMovieHandler)
+//Delete route
+server.delete('/favorite/:id', deleteFavMovieHandler)
+//.......
+
+
 //Git movie route
 server.get('/getmovies', getMoviesHandler)
 //Git specific movie route
 server.get('/getmovie/:id', getSpecificMoviesHandler)
 //Add movie route
 server.post('/addmovie', addMovieHandler)
-//Delete route
-server.delete('/DELETE/:id', deleteMovieHandler)
-//Update route
-server.put('/UPDATE/:id', updateMovieHandler)
 //Default route 
 server.get('*', defaultHandler)
 
@@ -229,7 +234,7 @@ function addMovieHandler(req, res) {
 }
 
 //Delete Movie Handler
-function deleteMovieHandler(req, res) {
+function deleteFavMovieHandler(req, res) {
     //   /DELETE/:id
 
     const id = req.params.id; //to get the path prameters
@@ -245,7 +250,7 @@ function deleteMovieHandler(req, res) {
 }
 
 //Update Movie Handler
-function updateMovieHandler(req, res) {
+function updateFavMovieHandler(req, res) {
     //  /UPDATE/:id
     const id = req.params.id; //to get the path prameters
     const updateReq = req.body;
