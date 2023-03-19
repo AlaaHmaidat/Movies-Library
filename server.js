@@ -81,18 +81,6 @@ function homeHandler(req, res) {
     res.send('Welcome to Home Page');
 }
 
-//Favorite route Handler
-function favoriteHandler(req, res) {
-    const sql = `SELECT * FROM movie`;
-    client.query(sql)
-        .then((data) => {
-            res.send(data.rows);
-        })
-        .catch((err) => {
-            errorHandler(err, req, res);
-        })
-}
-
 //Genre Handler
 function genreHandler(req, res) {
     // http://localhost:3000/genre
@@ -187,6 +175,68 @@ function discoverHandler(req, res) {
     }
 }
 
+//Favorite route Handler
+function favoriteHandler(req, res) {
+    const sql = `SELECT * FROM movie`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((err) => {
+            errorHandler(err, req, res);
+        })
+}
+
+
+//Update Movie Handler
+function updateFavMovieHandler(req, res) {
+    //  /favorite/:id
+    const id = req.params.id; //to get the path prameters
+    const updateReq = req.body;
+    const sql = `UPDATE movie
+    SET comment =$5
+    WHERE id=${id};`;
+    const arrVal = [updateReq.comment];
+
+    client.query(sql, arrVal)
+        .then((resData) => {
+            console.log(resData.rows);
+            //this status(200) mean everything is OK
+
+            // res.status(200).send(resData.rows);
+
+            // const sql = `SELECT * FROM movie`;
+            // client.query(sql)
+            //     .then((data) => {
+            //         res.send(data.rows);
+            //     })
+            //     .catch((err) => {
+            //         errorHandler(err, req, res);
+            //     })
+        })
+        .catch(error => {
+            // console.log(error);
+            errorHandler(error, req, res);
+        });
+}
+
+//Delete Movie Handler
+function deleteFavMovieHandler(req, res) {
+    //   /favorite/:id
+
+    const id = req.params.id; //to get the path prameters
+    const sql = `DELETE FROM movie WHERE id=${id}`;
+    client.query(sql)
+        .then((resData) => {
+            //this status(204) if id dosnt exist 
+            res.status(204).json({});
+        })
+        .catch((error) => {
+            errorHandler(error, req, res);
+        })
+}
+
+
 //Git Movie Handler
 function getMoviesHandler(req, res) {
     //    return all movies (movie tabel content)
@@ -226,52 +276,6 @@ function addMovieHandler(req, res) {
         .then((data) => {
             res.send("your data was added !");
 
-        })
-        .catch(error => {
-            // console.log(error);
-            errorHandler(error, req, res);
-        });
-}
-
-//Delete Movie Handler
-function deleteFavMovieHandler(req, res) {
-    //   /favorite/:id
-
-    const id = req.params.id; //to get the path prameters
-    const sql = `DELETE FROM movie WHERE id=${id}`;
-    client.query(sql)
-        .then((resData) => {
-            //this status(204) if id dosnt exist 
-            res.status(204).json({});
-        })
-        .catch((error) => {
-            errorHandler(error, req, res);
-        })
-}
-
-//Update Movie Handler
-function updateFavMovieHandler(req, res) {
-    //  /favorite/:id
-    const id = req.params.id; //to get the path prameters
-    const updateReq = req.body;
-    const sql = `UPDATE movie
-    SET comment =$5
-    WHERE id=${id};`;
-    const arrVal = [updateReq.comment];
-
-    client.query(sql, arrVal)
-        .then((resData) => {
-            //this status(200) mean everything is OK
-            res.status(200).send(resData.rows);
-
-            const sql = `SELECT * FROM movie`;
-            client.query(sql)
-                .then((data) => {
-                    res.send(data.rows);
-                })
-                .catch((err) => {
-                    errorHandler(err, req, res);
-                })
         })
         .catch(error => {
             // console.log(error);
